@@ -1,0 +1,111 @@
+<!doctype html>
+<html class="no-js" lang="">
+
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="manifest" href="site.webmanifest">
+    <link rel="apple-touch-icon" href="icon.png">
+    <!-- Place favicon.ico in the root directory -->
+
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <meta name="theme-color" content="#fafafa">
+</head>
+
+<body>
+<div id="root">
+    <div>counter is <span id="counter"></span></div>
+    <ul id="list" class="list-group"></ul>
+</div>
+<!-- Add your site or application content here -->
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+
+<script src="js/main.js"></script>
+<script>
+    $(function () {
+        render(data);
+
+        setTimeout(function () {
+            init();
+        },2000)
+
+
+        setInterval(function () {
+            data.shift();
+            render(data);
+        },5000)
+    })
+</script>
+<script>
+    function onClick(e) {
+        e.preventDefault();
+    }
+</script>
+<script>
+    var start = +new Date();
+    function render(data){
+        start = +new Date();
+        let counter = data.length;
+        let listItems = data.map(item => {
+            return "<a href=\"#\" class=\"list-group-item list-group-item-action active\" onclick='onClick'>\n" +
+                "    <div class=\"d-flex w-100 justify-content-between\">\n" +
+                "      <h5 class=\"mb-1\">"+ item.title +"</h5>\n" +
+                "      <small>"+ item.id +"</small>\n" +
+                "    </div>\n" +
+                "    <p class=\"mb-1\">" + item.userId+"</p>\n" +
+                "    <small>Donec id elit non mi porta.</small>\n" +
+                "  </a>"
+        })
+        $('#counter').text(counter);
+        $('#list').html(listItems).promise().done(function(){
+
+            console.log(+new Date() - start);
+        });
+        $('#list a').off('click').on('click', function(e){
+            e.preventDefault();
+        });
+
+
+    }
+</script>
+<script>
+    function init(){
+        const targetNode = document.getElementById('root');
+
+// Options for the observer (which mutations to observe)
+        const config = { attributes: true, childList: true, subtree: true, characterData: true };
+
+// Callback function to execute when mutations are observed
+        const callback = function(mutationsList, observer) {
+            // Use traditional 'for loops' for IE 11
+            for(let mutation of mutationsList) {
+                console.log(mutation)
+                if (mutation.type === 'childList') {
+                    console.log(+new Date() - start);
+                    console.log('A child node has been added or removed.');
+                }
+                else if (mutation.type === 'attributes') {
+                    console.log('The ' + mutation.attributeName + ' attribute was modified.');
+                }
+                else if (mutation.type === 'characterData') {
+                    console.log('The ' + mutation.attributeName + ' characterData was modified.');
+                }
+            }
+        };
+
+// Create an observer instance linked to the callback function
+        const observer = new MutationObserver(callback);
+
+// Start observing the target node for configured mutations
+        observer.observe(targetNode, config);
+    }
+</script>
+</body>
+
+</html>
